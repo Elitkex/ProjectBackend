@@ -84,7 +84,7 @@ app.post('/regisztracio', async (req, res) => {
 
         return res.status(200).json({
             message: "Sikeres regisztráció",
-            id: result.insertId // JAVÍTVA: result.insertId
+            id: result.insertId
         })
     } catch (error) {
         console.log(error)
@@ -95,7 +95,7 @@ app.post('/regisztracio', async (req, res) => {
 // ─── BELÉPÉS ─────────────────────────────────────────────
 
 // JAVÍTVA: auth middleware eltávolítva, belépéskor még nincs token
-app.post('/belepes', auth, async (req, res) => {
+app.post('/belepes', async (req, res) => {
     const { felhasznalonevVagyEmail, jelszo } = req.body
     if (!felhasznalonevVagyEmail || !jelszo) {
         return res.status(400).json({ message: "Hiányos belépési adatok" })
