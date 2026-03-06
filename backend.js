@@ -94,7 +94,6 @@ app.post('/regisztracio', async (req, res) => {
 
 // ─── BELÉPÉS ─────────────────────────────────────────────
 
-// JAVÍTVA: auth middleware eltávolítva, belépéskor még nincs token
 app.post('/belepes', async (req, res) => {
     const { felhasznalonevVagyEmail, jelszo } = req.body
     if (!felhasznalonevVagyEmail || !jelszo) {
@@ -119,7 +118,7 @@ app.post('/belepes', async (req, res) => {
                 user = rows[0]
                 hashjelszo = user.jelszo
             } else {
-                return res.status(402).json({ message: "Ehhez a felhasználónévhez nem tartozik fiók" })
+                return res.status(402).json({ message: "Ehhez az email címhez nem tartozik fiók" })
             }
         }
 
@@ -176,10 +175,10 @@ app.get('/decks', auth, async (req, res) => {
 
         for (let deck of decks) {
             const [cards] = await db.query(
-                `SELECT kartyak.id, kartyak.name, kartyak.rarity, kartyak.elixir_cost
+                `SELECT kartyak.id, kartyak.name, kartyak.rarity, kartyak.elixir_cost, kartyak.dmg, kartyak.hit_speed
                  FROM paklikartyak pk
                  JOIN kartyak ON pk.card_id = kartyak.id
-                 WHERE pk.deck_id = ?`, // JAVÍTVA: k.id -> kartyak.id
+                 WHERE pk.deck_id = ?`, 
                 [deck.id]
             )
             deck.kartyak = cards
@@ -203,7 +202,7 @@ app.get('/decks/:id', auth, async (req, res) => {
             return res.status(404).json({ message: "Pakli nem található" })
         }
         const [cards] = await db.query(
-            `SELECT kartyak.id, kartyak.name, kartyak.rarity, kartyak.elixir_cost
+            `SELECT kartyak.id, kartyak.name, kartyak.rarity, kartyak.elixir_cost, kartyak.dmg, kartyak.hit_speed
              FROM paklikartyak pk
              JOIN kartyak ON pk.card_id = kartyak.id
              WHERE pk.deck_id = ?`,
@@ -312,7 +311,9 @@ app.put('/felhasznalonev', auth, async (req, res) => {
     if (!ujFelhasznalonev) return res.status(401).json({ message: "Az új felhasználónév megadása kötelező" })
 
     try {
-        const [result] = await db.query('SELECT * FROM felhasznalok WHERE felhasznalonev = ?', [ujFelhasznalonev])
+        const [result] = await db.query('SELECT * FROM felhasznalok WHERE LOWER(felhasznalonev) = LOWER(?) AND id != ?',
+        [ujFelhasznalonev, req.user.id]
+        )
         if (result.length) return res.status(402).json({ message: "A felhasználónév már foglalt" })
 
         await db.query('UPDATE felhasznalok SET felhasznalonev = ? WHERE id = ?', [ujFelhasznalonev, req.user.id])
