@@ -9,7 +9,7 @@ const emailValidator = require('node-email-verifier')
 // config
 const PORT = 3000
 const HOST = 'localhost'
-const JWT_SECRET = 'nagyon_egyedi_jelszo_fasz'
+const JWT_SECRET = 'nagyon_egyedi_jelszo'
 const JWT_EXPIRES_IN = '7d'
 const COOKIE_NAME = 'auth_token'
 
@@ -34,7 +34,7 @@ const app = express()
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
-    origin: 'http://localhost:5173', // JAVÍTVA: Vite dev szerver portja
+    origin: 'http://localhost:5173',
     credentials: true
 }))
 
@@ -110,7 +110,7 @@ app.post('/belepes', async (req, res) => {
                 user = rows[0]
                 hashjelszo = user.jelszo
             } else {
-                return res.status(401).json({ message: "Ehhez az emailcímhez nem tartozik fiók" })
+                return res.status(401).json({ message: "Ehhez az email címhez / felhasznalónévhez nem tartozik fiók" })
             }
         } else {
             const [rows] = await db.query('SELECT * FROM felhasznalok WHERE felhasznalonev = ?', [felhasznalonevVagyEmail])
@@ -118,7 +118,7 @@ app.post('/belepes', async (req, res) => {
                 user = rows[0]
                 hashjelszo = user.jelszo
             } else {
-                return res.status(402).json({ message: "Ehhez az email címhez nem tartozik fiók" })
+                return res.status(402).json({ message: "Ehhez az email címhez / felhasznalónévhez nem tartozik fiók" })
             }
         }
 
