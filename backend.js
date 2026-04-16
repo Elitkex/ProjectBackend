@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express = require('express')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
@@ -7,26 +9,25 @@ const jwt = require('jsonwebtoken')
 const emailValidator = require('node-email-verifier')
 
 // config
-const PORT = 3000
-const HOST = 'localhost'
-const JWT_SECRET = 'nagyon_egyedi_jelszo'
-const JWT_EXPIRES_IN = '7d'
+const PORT = process.env.PORT;
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
 const COOKIE_NAME = 'auth_token'
 
 const COOKIE_OPTS = {
     httpOnly: true,
-    secure: false,
-    sameSite: 'lax',
+    secure: true,
+    sameSite: 'none',
     path: '/',
     maxAge: 7 * 24 * 60 * 60 * 1000,
 }
 
 const db = mysql.createPool({
-    host: 'localhost',
-    port: '3306',
-    user: 'root',
-    password: '',
-    database: 'clashroyale',
+    host: process.env.HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
 })
 
 const app = express()
@@ -34,7 +35,7 @@ const app = express()
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: '*',
     credentials: true
 }))
 
@@ -278,7 +279,7 @@ app.delete('/decks/:id', auth, async (req, res) => {
 
 app.delete('/fioktorles', auth, async (req, res) => {
     try {
-        await db.query('DELETE FROM felhasznalok WHERE id = ?', [req.user.id]) // JAVÍTVA: req, user -> req.user
+        await db.query('DELETE FROM felhasznalok WHERE id = ?', [req.user.id])
         res.clearCookie(COOKIE_NAME, { path: '/' })
         res.status(200).json({ message: "Sikeres fiók törlés" })
     } catch (error) {
@@ -329,8 +330,8 @@ app.put('/jelszo', auth, async (req, res) => {
     if (!ujJelszo) return res.status(401).json({ message: "Az új jelszó megadása kötelező" })
 
     try {
-        const hash = await bcrypt.hash(ujJelszo, 10) // JAVÍTVA: hashelni kell
-        await db.query('UPDATE felhasznalok SET jelszo = ? WHERE id = ?', [hash, req.user.id]) // JAVÍTVA: jelszo oszlop
+        const hash = await bcrypt.hash(ujJelszo, 10)
+        await db.query('UPDATE felhasznalok SET jelszo = ? WHERE id = ?', [hash, req.user.id])
         return res.status(200).json({ message: "Sikeresen módosult a jelszó" })
     } catch (error) {
         console.log(error)
