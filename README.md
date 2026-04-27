@@ -166,6 +166,8 @@ A projekt manuálisan lett tesztelve **Postman** segítségével.
 - [phpMyAdmin](https://www.phpmyadmin.net)
 - [GitHub](https://github.com)
 - [NPM](https://www.npmjs.com)
+- [Claude](https://claude.ai)
+- [Figma](https://figma.com)
 
 ## Frontend
 
