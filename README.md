@@ -41,6 +41,9 @@
   - deck_id
   - card_id
   - slot_index
+ 
+![kép az adatbázis kapcsolatokról](https://snipboard.io/a9NDGW.jpg)
+>[adatbázis diagram](https://drawsql.app/teams/szotyi-1/diagrams/projekt)
 
 ---
 
