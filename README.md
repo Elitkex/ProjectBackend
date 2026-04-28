@@ -1,6 +1,6 @@
 # Clash Royale Pakli Építő – Backend
 
-> Node.js + Express alapú REST API a Clash Royale pakli építő alkalmazáshoz. JWT alapú authentikációt, MySQL adatbázist és teljes CRUD műveleteket biztosít.
+> Node.js + Express alapú REST API a Clash Royale alkalmazáshoz. JWT alapú authentikációt, MySQL adatbázist és teljes CRUD műveleteket biztosít.
 
 ---
 
