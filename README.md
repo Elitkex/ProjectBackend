@@ -6,15 +6,14 @@
 
 ## Készítette
 
-- Matlag Máté
-- Túri Dominik
-- [GitHub repo](https://github.com/Elitkex/ProjectBackend)
+- [Matlag Máté](https://github.com/Elitkex)
+- [Túri Dominik](https://github.com/DomiNikeasd)
 
 ---
 
 ### Fejlesztési környezet
 
-- **Node.js**
+- **Node.js** Express keretrendszerrel
 - **MySQL**
 
 ---
