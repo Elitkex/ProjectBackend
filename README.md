@@ -42,7 +42,7 @@
   - card_id
   - slot_index
  
-![kép az adatbázis kapcsolatokról](https://snipboard.io/a9NDGW.jpg)
+![kép az adatbázis kapcsolatokról](https://snipboard.io/K5jGRl.jpg)
 >[adatbázis diagram](https://drawsql.app/teams/szotyi-1/diagrams/projekt)
 
 ---
@@ -104,7 +104,7 @@ ProjectBackend/
 - Jelszavak **bcrypt**-tel hashelve
 - Middleware szintű authentikáció
 - Email validáció `node-email-verifier`-rel
-- A `.env` fájl tartalmaz minden érzékeny adatot – ne oszd meg publikusan!
+- A `.env` fájl tartalmaz minden érzékeny adatot
 
 ---
 
@@ -140,8 +140,8 @@ ProjectBackend/
    |---|---|---|---|
    | Paklik lekérése | GET | `/decks` | Bejelentkezett felhasználó paklijai *(hitelesítés szükséges)* |
    | Egy pakli lekérése | GET | `/decks/:id` | *(hitelesítés szükséges)* |
-   | Új pakli | POST | `/decks` | 8 kártya kötelező *(hitelesítés szükséges)* |
-   | Pakli frissítése | PUT | `/decks/:id` | 8 kártya kötelező *(hitelesítés szükséges)* |
+   | Új pakli | POST | `/decks` | *(hitelesítés szükséges)* |
+   | Pakli frissítése | PUT | `/decks/:id` | *(hitelesítés szükséges)* |
    | Pakli törlése | DELETE | `/decks/:id` | *(hitelesítés szükséges)* |
    | Részleges pakli létrehozása | POST | `/decks/partial` | *(hitelesítés szükséges)* |
    | Részleges pakli frissítése | PUT | `/decks/partial/:id` | *(hitelesítés szükséges)* |
@@ -158,7 +158,6 @@ A projekt manuálisan lett tesztelve **Postman** segítségével.
 
 - Paklik megosztása felhasználók között
 - Kártyastatisztikák részletesebb adatokkal
-- Admin felület kártyaadatok kezeléséhez
 
 ---
 
