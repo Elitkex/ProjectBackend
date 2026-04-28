@@ -78,7 +78,7 @@ ProjectBackend/
 - [express](https://www.npmjs.com/package/express)
 - [mysql2](https://www.npmjs.com/package/mysql2)
 - [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken)
-- [bcrypt](https://www.npmjs.com/package/bcrypt)
+- [bcryptjs](https://www.npmjs.com/package/bcryptjs)
 - [cookie-parser](https://www.npmjs.com/package/cookie-parser)
 - [cors](https://www.npmjs.com/package/cors)
 - [node-email-verifier](https://www.npmjs.com/package/node-email-verifier)
