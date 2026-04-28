@@ -3,7 +3,7 @@ require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const mysql = require('mysql2/promise')
 const jwt = require('jsonwebtoken')
 const emailValidator = require('node-email-verifier')
@@ -35,7 +35,7 @@ const app = express()
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
-    origin: '*',
+    origin: ['http://localhost:5173', 'https://mydeckbuilder.netlify.app'],
     credentials: true
 }))
 
@@ -176,13 +176,15 @@ app.get('/decks', auth, async (req, res) => {
 
         for (let deck of decks) {
             const [cards] = await db.query(
-                `SELECT kartyak.id, kartyak.name, kartyak.rarity, kartyak.elixir_cost, kartyak.dmg, kartyak.hit_speed
-                 FROM paklikartyak pk
-                 JOIN kartyak ON pk.card_id = kartyak.id
-                 WHERE pk.deck_id = ?`, 
-                [deck.id]
-            )
-            deck.kartyak = cards
+    			`SELECT kartyak.id, kartyak.name, kartyak.rarity, kartyak.elixir_cost, 
+            			kartyak.dmg, kartyak.hit_speed, kartyak.img, pk.slot_index
+     			FROM paklikartyak pk
+     			LEFT JOIN kartyak ON pk.card_id = kartyak.id
+     			WHERE pk.deck_id = ?
+     			ORDER BY pk.slot_index`,
+    			[deck.id]
+			)
+			deck.kartyak = cards
         }
 
         res.status(200).json(decks)
@@ -210,6 +212,56 @@ app.get('/decks/:id', auth, async (req, res) => {
             [req.params.id]
         )
         res.status(200).json({ ...decks[0], kartyak: cards })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: "Szerverhiba" })
+    }
+})
+
+app.post('/decks/partial', auth, async (req, res) => {
+    const { kartya_ids } = req.body
+    if (!kartya_ids) return res.status(400).json({ message: "Kártyák szükségesek" })
+    
+    try {
+        const [result] = await db.query('INSERT INTO paklik (user_id) VALUES (?)', [req.user.id])
+        const pakli_id = result.insertId
+        
+        const values = kartya_ids
+            .map((kid, index) => [pakli_id, kid, index])
+            .filter(v => v[1] !== null)
+
+        if (values.length > 0) {
+            await db.query('INSERT INTO paklikartyak (deck_id, card_id, slot_index) VALUES ?', [values])
+        }
+        
+        res.status(201).json({ message: "Pakli létrehozva", pakli_id })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: "Szerverhiba" })
+    }
+})
+
+app.put('/decks/partial/:id', auth, async (req, res) => {
+    const { kartya_ids } = req.body
+    if (!kartya_ids) return res.status(400).json({ message: "Kártyák szükségesek" })
+    try {
+        const [decks] = await db.query(
+            'SELECT * FROM paklik WHERE id = ? AND user_id = ?',
+            [req.params.id, req.user.id]
+        )
+        if (!decks.length) return res.status(404).json({ message: "Pakli nem található" })
+        
+        await db.query('DELETE FROM paklikartyak WHERE deck_id = ?', [req.params.id])
+        
+        const values = kartya_ids
+            .map((kid, index) => [req.params.id, kid, index])
+            .filter(v => v[1] !== null)
+        
+        if (values.length > 0) {
+            await db.query('INSERT INTO paklikartyak (deck_id, card_id, slot_index) VALUES ?', [values])
+        }
+
+        res.status(200).json({ message: "Pakli frissítve" })
     } catch (error) {
         console.log(error)
         res.status(500).json({ message: "Szerverhiba" })
@@ -341,6 +393,6 @@ app.put('/jelszo', auth, async (req, res) => {
 
 // ─── SZERVER ─────────────────────────────────────────────
 
-app.listen(PORT, HOST, () => {
-    console.log(`http://${HOST}:${PORT}/`)
+app.listen(PORT, () => {
+    console.log(`http://localhost:${PORT}/`)
 })
